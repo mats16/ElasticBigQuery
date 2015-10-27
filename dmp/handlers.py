@@ -14,11 +14,6 @@ from google.appengine.api.labs import taskqueue
 from lib.bigquery import *
 
 PROJECT_ID = app_identity.get_application_id()
-DEFAULT_HEADERS = [
-    ("Access-Control-Allow-Headers", "X-Requested-With, X-TD-Write-Key, Content-Type"),
-    ("Access-Control-Allow-Methods", "GET, POST"),
-    ("Access-Control-Allow-Origin", "*"),
-]
 GIF_PIXEL = base64.b64decode("R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 
 def generate_bqid(cookies):
@@ -104,6 +99,13 @@ class GetidHandler(RequestHandler):
 class BeaconHandler(RequestHandler):
 
     def get(self, dataset_id, table_id="measurement", project_id=PROJECT_ID):
+        self.response.headerlist = [
+            ("Access-Control-Allow-Headers", "Content-Type, Cookie"),
+            ("Access-Control-Allow-Methods", "GET"),
+            ("Access-Control-Allow-Origin", "*"),
+            ("Content-Type", "image/gif"),
+            ("Cache-Control", "private, no-store, no-cache, max-age=0, proxy-revalidate"),
+        ]
         row = modify_row_beacon(self.request)
 
         # GTM SPAM (option)
@@ -187,16 +189,7 @@ class BeaconHandler(RequestHandler):
             # Retry Insert
             taskqueue.add(url="/dmp/task/event/{0}/{1}".format(dataset_id, table_id), payload=json.dumps(body), queue_name="reinsert")
             logging.info("TaskQueue Add (insertId: {0})".format(body[u"insertId"]))
-        else:
-            pass
 
-        self.response.headerlist = [
-            ("Access-Control-Allow-Headers", "Content-Type, Cookie"),
-            ("Access-Control-Allow-Methods", "GET"),
-            ("Access-Control-Allow-Origin", "*"),
-            ("Content-Type", "image/gif"),
-            ("Cache-Control", "private, no-store, no-cache, max-age=0, proxy-revalidate"),
-        ]
         self.response.set_cookie("bqid", value=row["bqid"], max_age=60*60*24*365*1, path='/', domain=self.request.headers.get("HOST"), overwrite=True)
         self.response.body = GIF_PIXEL
         self.response.status = 200
@@ -206,6 +199,12 @@ class BeaconHandler(RequestHandler):
 class EventHandler(RequestHandler):
 
     def get(self, dataset_id, table_id, project_id=PROJECT_ID):
+        self.response.headerlist = [
+            ("Access-Control-Allow-Headers", "X-Requested-With, X-TD-Write-Key, Content-Type"),
+            ("Access-Control-Allow-Methods", "GET, POST"),
+            ("Access-Control-Allow-Origin", "*"),
+            ("Content-Type", "application/javascript"),
+        ]
         apikey = self.request.params.get("api_key")
         callback = self.request.params.get("callback")
         row = modify_row_td(self.request)
@@ -273,7 +272,6 @@ class EventHandler(RequestHandler):
                 logging.error(content)
         except Exception, e:
             logging.error(e)
-            self.response.headers = DEFAULT_HEADERS
             self.response.body = "typeof {0} === 'function' && {0}({{\"created\":{1}}});".format(callback, "false")
             self.response.status = 200
             return self.response
@@ -294,11 +292,7 @@ class EventHandler(RequestHandler):
             # Retry Insert
             taskqueue.add(url="/dmp/task/event/{0}/{1}".format(dataset_id, table_id), payload=json.dumps(body), queue_name="reinsert")
             logging.info("TaskQueue Add (insertId: {0})".format(body[u"insertId"]))
-        else:
-            pass
 
-        self.response.headers = DEFAULT_HEADERS
-        self.response.content_type = "application/javascript"
         self.response.set_cookie("bqid", value=row["bqid"], max_age=60*60*24*365*1, path='/', domain=self.request.headers.get("HOST"), overwrite=True)
         self.response.body = "typeof {0} === 'function' && {0}({{\"created\":{1}}});".format(callback, "true")
         self.response.status = 200
