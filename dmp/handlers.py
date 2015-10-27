@@ -35,13 +35,13 @@ def modify_row(request):
     ua_parse = woothee.parse(ua)
     headers = request.headers
     row = json.loads(base64.b64decode(request.params.get(u"data")))
+    for i in [u"td_path", u"td_referrer", u"td_url"]:
+        if ( row.get(i) ):
+            row[i] = urllib2.unquote(row[i].encode('utf8'))
     row.update({
         u"time":                td_time_convert(request.params.get(u"modified")),
         u"bqid":                generate_bqid(request.cookies),
         u"td_ip":               request.remote_addr,
-        u"td_path":             urllib2.unquote(row.get(u"td_path").encode('utf8')), 
-        u"td_referrer":         urllib2.unquote(row.get(u"td_referrer").encode('utf8')),
-        u"td_url":              urllib2.unquote(row.get(u"td_url").encode('utf8')),
         u"td_browser":          ua_parse.get(u"name"),
         u"td_browser_version":  ua_parse.get(u"version"),
         u"td_os":               ua_parse.get(u"os"),
