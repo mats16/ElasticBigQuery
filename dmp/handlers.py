@@ -104,7 +104,6 @@ class GetidHandler(RequestHandler):
 class BeaconHandler(RequestHandler):
 
     def get(self, dataset_id, table_id="measurement", project_id=PROJECT_ID):
-        logging.debug(self.request.params) # Debug
         row = modify_row_beacon(self.request)
 
         # GTM SPAM (option)
