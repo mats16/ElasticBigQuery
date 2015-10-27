@@ -1,0 +1,7 @@
+queue:
+- name: reinsert
+  rate: 5/m
+  bucket_size: 10
+  retry_parameters:
+    task_retry_limit: 10
+    task_age_limit: 1d
