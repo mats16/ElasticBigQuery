@@ -35,7 +35,7 @@ def modify_row(request):
         if ( row.get(i) ):
             row[i] = urllib2.unquote(row[i].encode('utf8'))
     if ( request.params.get(u"modified") ):
-        modified = request.params.get(u"modified")
+        modified = str(request.params.get(u"modified"))
         row[u"time"] = float(".".join([modified[0:10], modified[10:13]]))
     else:
         row[u"time"] = time.time()
