@@ -1,5 +1,5 @@
-application: your-app-id
-version: dev
+application: elasticbigquery
+version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -35,6 +35,12 @@ handlers:
 - url: /admin.*
   script: main.app
   login: admin
+
+- url: /dmp/task/.*
+  script: dmp.main.app
+  login: admin
+- url: /dmp/.*
+  script: dmp.main.app
 
 - url: /favicon\.ico
   mime_type: image/vnd.microsoft.icon

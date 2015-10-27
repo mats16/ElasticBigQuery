@@ -277,6 +277,15 @@ class SocialLoginHandler(BaseHandler):
                                               self.app.config.get('github_redirect_uri'), scope)
             self.redirect(github_helper.get_authorize_url())
 
+        elif provider_name == "google":
+            continue_url = self.request.get('continue_url')
+            if continue_url:
+                dest_url = self.uri_for('social-login-complete', provider_name=provider_name, continue_url=continue_url)
+            else:
+                dest_url = self.uri_for('social-login-complete', provider_name=provider_name)
+            login_url = users.create_login_url(dest_url)
+            self.redirect(login_url)
+
         elif provider_name in models.SocialUser.open_id_providers():
             continue_url = self.request.get('continue_url')
             if continue_url:
