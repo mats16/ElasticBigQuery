@@ -26,10 +26,6 @@ def generate_bqid(cookies):
         bqid = unicode(str(uuid.uuid4()).replace("-",""))
     return bqid
 
-def td_time_convert(td_time):
-    td_time = str(td_time)
-    return float(".".join([td_time[0:10], td_time[10:13]]))
-
 def modify_row(request):
     ua = request.headers.get(u"User-Agent")
     ua_parse = woothee.parse(ua)
@@ -38,8 +34,12 @@ def modify_row(request):
     for i in [u"td_path", u"td_referrer", u"td_url"]:
         if ( row.get(i) ):
             row[i] = urllib2.unquote(row[i].encode('utf8'))
+    if ( request.params.get(u"modified") ):
+        modified = request.params.get(u"modified")
+        row[u"time"] = float(".".join([modified[0:10], modified[10:13]]))
+    else:
+        row[u"time"] = time.time()
     row.update({
-        u"time":                td_time_convert(request.params.get(u"modified")),
         u"bqid":                generate_bqid(request.cookies),
         u"td_ip":               request.remote_addr,
         u"td_browser":          ua_parse.get(u"name"),
