@@ -34,18 +34,14 @@ Reference is [here](http://docs.treasuredata.com/articles/javascript-sdk)
 
 ```html
 <script type="text/javascript">
-  ! function(td_database, td_table) {
-    var td = new Treasure(
-      {
-        host: 'xxx-xxx.appspot.com',
-        pathname: '/dmp/v1/event/',
-        writeKey: 'dummy',
-        database: td_database
-      }
-    );
+  var td = new Treasure({
+    host: 'xxx-xxx.appspot.com',
+    pathname: '/dmp/v1/event/',
+    writeKey: 'dummy',
+    database: 'example'
+  });
 
-    td.trackPageview(td_table);
-  }('example', 'pageviews');
+  td.trackPageview('pageviews');
 </script>
 ```
 
