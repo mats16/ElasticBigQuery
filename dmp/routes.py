@@ -5,6 +5,7 @@ import handlers
 
 _routes = [
     Route(r'/dmp/v1/bqid/get', handlers.GetidHandler, name='get-id'),
+    Route(r'/dmp/v1/beacon/<dataset_id>/measurement', handlers.BeaconHandler, name='beacon'),
     Route(r'/dmp/v1/event/<dataset_id>/<table_id>', handlers.EventHandler, name='event'),
     Route(r'/dmp/task/event/<dataset_id>/<table_id>', handlers.TaskeventHandler, name='task-event'),
 ]
