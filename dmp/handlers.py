@@ -13,6 +13,8 @@ from google.appengine.api import app_identity
 from google.appengine.api.labs import taskqueue
 from lib.bigquery import *
 
+STATIC_APIKEY = "thie_is_static_setting_yet"
+
 PROJECT_ID = app_identity.get_application_id()
 GIF_PIXEL = base64.b64decode("R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==")
 
@@ -99,8 +101,7 @@ class BeaconHandler(RequestHandler):
         ]
         row = modify_row_beacon(self.request)
 
-        # GTM SPAM (option)
-        if row[u"referrer"] == u"gtm-msr.appspot.com":
+        if row[u"referrer"] == u"gtm-msr.appspot.com": # GTM SPAM (option)
             self.response.status = 500
             return self.response
 
@@ -200,9 +201,12 @@ class EventHandler(RequestHandler):
         callback = self.request.params.get("callback")
         row = modify_row_td(self.request)
 
-        # GTM SPAM (option)
-        if row[u"td_host"] == u"gtm-msr.appspot.com":
+        if row[u"td_host"] == u"gtm-msr.appspot.com": # GTM SPAM (option)
             self.response.status = 500
+            return self.response
+        elif apikey != STATIC_APIKEY:
+            self.response.body = "typeof {0} === 'function' && {0}({{\"created\":{1}}});".format(callback, "false")
+            self.response.status = 200
             return self.response
 
         table_id = table_id + datetime.datetime.fromtimestamp(row[u"time"]).strftime("%Y%m%d")
