@@ -11,16 +11,25 @@ ElasticBigQuery is designed to provide the ease of use like TreasureData to BigQ
 
 Functions and features
 -----------------------
-- [td-js-sdk](https://github.com/treasure-data/td-js-sdk) id supported (jsonp only)
- - writeKey is disabled yet
-- issuance of third-party cookie(uuid)
+- tracking with web beacon
+- tracking with [td-js-sdk](https://github.com/treasure-data/td-js-sdk) (jsonp only)
+ - writeKey is static yet..
+- issuance of third-party cookie(bqid)
  - Custom domain is supported
 
 
 Example
 ---------
 
-### Tracking using td-js-sdk
+### Tracking with Web Beacon
+
+Sample html
+
+```html
+<img src="//xxx-xxx.appspot.com/dmp/v1/beacon/<dataset_id>/measurement">
+```
+
+### Tracking with [td-js-sdk](https://github.com/treasure-data/td-js-sdk)
 
 Reference is [here](http://docs.treasuredata.com/articles/javascript-sdk)
 
@@ -37,11 +46,11 @@ Reference is [here](http://docs.treasuredata.com/articles/javascript-sdk)
   var td = new Treasure({
     host: 'xxx-xxx.appspot.com',
     pathname: '/dmp/v1/event/',
-    writeKey: 'dummy',
-    database: 'example'
+    writeKey: 'thie_is_static_setting_yet',
+    database: '<dataset_id>'
   });
 
-  td.trackPageview('pageviews');
+  td.trackPageview('<table_id>');
 </script>
 ```
 
