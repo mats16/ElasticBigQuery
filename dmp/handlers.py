@@ -73,15 +73,6 @@ def modify_row_td(request):
         })
     return row
 
-def modify_schema(row):
-    schema = [{ u"name": u"time", u"type": u"TIMESTAMP", u"mode": u"REQUIRED" }]
-    fields = row.keys()
-    fields.sort()
-    for field in fields:
-        if field != u"time":
-            schema.append({ u"name": field, u"type": u"STRING", u"mode": u"NULLABLE" })
-    return schema
-
 
 class GetidHandler(RequestHandler):
 
