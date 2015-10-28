@@ -13,6 +13,15 @@ def generate_insert_body(row):
     }
     return body
 
+def modify_schema(row):
+    schema = [{ u"name": u"time", u"type": u"TIMESTAMP", u"mode": u"REQUIRED" }]
+    fields = row.keys()
+    fields.sort()
+    for field in fields:
+        if field != u"time":
+            schema.append({ u"name": field, u"type": u"STRING", u"mode": u"NULLABLE" })
+    return schema
+
 
 class BigQuery():
 
@@ -52,7 +61,16 @@ class BigQuery():
         res = req.execute()
         return res
 
-    def update_table(self, dataset_id, table_id, schema):
+    def get_table(self, dataset_id, table_id):
+        req = self.bigquery.tables().get(projectId=self.project_id, datasetId=dataset_id, tableId=table_id)
+        res = req.execute()
+        return res
+
+    def update_table(self, dataset_id, table_id, new_schema):
+        schema = self.get_table(dataset_id, table_id)[u"schema"][u"fields"]
+        for field in new_schema:
+            if field not in schema:
+                schema.append(field)
         body = {
             u"tableReference": {
                 u"projectId": self.project_id,
